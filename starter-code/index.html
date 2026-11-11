@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#190b45">
+    <meta name="description" content="Pick a category, guess the letters, and solve the word before your eight chances run out. Play Hangman with your mouse, touch, or keyboard.">
+    <link rel="icon" type="image/png" sizes="32x32" href="./assets/images/favicon-32x32.png">
+    <link rel="preload" href="./assets/fonts/MouseMemoirs-Regular.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="stylesheet" href="./styles.css">
+    <script type="module" src="./js/app.js"></script>
+    <title>Hangman | The Hangman Game</title>
+  </head>
+  <body data-screen="home">
+    <a class="skip-link" href="#main-content">Skip to content</a>
+    <main id="main-content" tabindex="-1">
+      <section id="home-screen" class="home-screen" aria-labelledby="home-title">
+        <div class="menu-panel panel">
+          <h1 id="home-title" class="home-logo">
+            <img src="./assets/images/logo.svg" width="374" height="186" alt="The Hangman Game">
+          </h1>
+          <button id="play-button" class="play-button" type="button" aria-label="Play game" disabled>
+            <img src="./assets/images/icon-play.svg" width="67" height="65" alt="">
+          </button>
+          <button class="button" type="button" data-action="instructions">How to play</button>
+        </div>
+        <div class="loading-message">
+          <p id="load-message" role="status">Loading your next challenge…</p>
+          <button id="retry-button" class="text-button" type="button" hidden>Try again</button>
+        </div>
+      </section>
+
+      <section id="instructions-screen" class="screen" aria-labelledby="instructions-title" hidden>
+        <header class="page-header">
+          <button class="round-button" type="button" data-action="home" aria-label="Back to main menu">
+            <img src="./assets/images/icon-back.svg" width="38" height="38" alt="">
+          </button>
+          <h1 id="instructions-title" class="display-title" tabindex="-1" data-heading="How to Play"><span>How to Play</span></h1>
+        </header>
+        <ol class="instructions-list">
+          <li class="instruction-card">
+            <span class="step-number" aria-hidden="true">01</span>
+            <h2>Choose a category</h2>
+            <p>First, choose a word category, like animals or movies. The computer then randomly selects a secret word from that topic and shows you blanks for each letter of the word.</p>
+          </li>
+          <li class="instruction-card">
+            <span class="step-number" aria-hidden="true">02</span>
+            <h2>Guess letters</h2>
+            <p>Take turns guessing letters. The computer fills in the relevant blank spaces if your guess is correct. If it’s wrong, you lose some health, which empties after eight incorrect guesses.</p>
+          </li>
+          <li class="instruction-card">
+            <span class="step-number" aria-hidden="true">03</span>
+            <h2>Win or lose</h2>
+            <p>You win by guessing all the letters in the word before your health runs out. If the health bar empties before you guess the word, you lose.</p>
+          </li>
+        </ol>
+        <p class="keyboard-tip">Use your keyboard’s A–Z keys to guess. Press Esc to pause.</p>
+      </section>
+
+      <section id="categories-screen" class="screen" aria-labelledby="categories-title" hidden>
+        <header class="page-header">
+          <button class="round-button" type="button" data-action="home" aria-label="Back to main menu">
+            <img src="./assets/images/icon-back.svg" width="38" height="38" alt="">
+          </button>
+          <h1 id="categories-title" class="display-title" tabindex="-1" data-heading="Pick a Category"><span>Pick a Category</span></h1>
+        </header>
+        <div id="category-list" class="category-list" role="group" aria-label="Word categories"></div>
+        <p id="categories-message" class="category-message"></p>
+      </section>
+
+      <section id="game-screen" class="screen game-screen" aria-labelledby="category-title" hidden>
+        <header class="game-header">
+          <button id="pause-button" class="round-button" type="button" aria-label="Pause game" aria-haspopup="dialog" aria-controls="game-dialog" aria-keyshortcuts="Escape">
+            <img src="./assets/images/icon-menu.svg" width="38" height="32" alt="">
+          </button>
+          <h1 id="category-title" class="category-title" tabindex="-1"></h1>
+          <div class="health">
+            <div id="health-meter" class="health-meter" role="meter" aria-label="Remaining health" aria-valuemin="0" aria-valuemax="8" aria-valuenow="8" aria-valuetext="8 of 8 lives remaining">
+              <span id="health-fill" class="health-fill"></span>
+            </div>
+            <img class="heart" src="./assets/images/icon-heart.svg" width="54" height="50" alt="">
+          </div>
+        </header>
+        <div class="game-board">
+          <h2 class="sr-only">Guess the word</h2>
+          <p id="puzzle-description" class="sr-only"></p>
+          <div id="puzzle" class="puzzle" aria-hidden="true"></div>
+          <div id="letter-keyboard" class="letter-keyboard" role="group" aria-label="Choose a letter" aria-describedby="keyboard-help"></div>
+          <p id="keyboard-help" class="sr-only">Use the letter buttons or type A to Z. Press Escape to pause. Used letters are unavailable.</p>
+        </div>
+      </section>
+      <p id="game-announcement" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+      <noscript><p class="noscript-message">Please enable JavaScript to play The Hangman Game.</p></noscript>
+    </main>
+
+    <dialog id="game-dialog" class="game-dialog" aria-labelledby="dialog-title" aria-describedby="dialog-description">
+      <div class="dialog-panel panel">
+        <h2 id="dialog-title" class="display-title dialog-title" data-heading="Paused"><span id="dialog-title-label">Paused</span></h2>
+        <p id="dialog-description" class="dialog-description"></p>
+        <div class="dialog-actions">
+          <button id="resume-button" class="button" type="button" data-action="resume" autofocus>Continue</button>
+          <button id="again-button" class="button" type="button" data-action="again" hidden>Play again!</button>
+          <button class="button" type="button" data-action="categories">New category</button>
+          <button class="button button--pink" type="button" data-action="home">Quit game</button>
+        </div>
+      </div>
+    </dialog>
+  </body>
+</html>

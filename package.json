@@ -1,0 +1,21 @@
+{
+  "name": "frontend-mentor-hangman",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "description": "An accessible, mobile-first Hangman game built with vanilla JavaScript.",
+  "engines": { "node": ">=20" },
+  "scripts": {
+    "dev": "node scripts/serve.mjs",
+    "start": "node scripts/serve.mjs",
+    "build": "node scripts/build.mjs",
+    "preview": "node scripts/serve.mjs --dist",
+    "test": "node --test tests/unit/game.test.js",
+    "test:e2e": "playwright test",
+    "test:all": "npm test && npm run test:e2e"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.65.0",
+    "axe-core": "4.14.0"
+  }
+}
