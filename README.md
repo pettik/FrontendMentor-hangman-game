@@ -1,72 +1,110 @@
 # The Hangman Game
 
-Responzivní implementace [Frontend Mentor Hangman challenge](https://www.frontendmentor.io) v HTML, CSS a modulárním JavaScriptu. Mobile first, bez frameworku a bez produkčních závislostí. Původní zadání je v [docs/CHALLENGE.md](./docs/CHALLENGE.md).
+A responsive implementation of the [Frontend Mentor Hangman challenge](https://www.frontendmentor.io), built with HTML, CSS, and modular JavaScript. The project follows a mobile-first approach and has no framework or production dependencies. The original brief is preserved in [docs/CHALLENGE.md](./docs/CHALLENGE.md).
 
-## Spuštění
+## Deploying to Netlify
 
-Potřebuješ Node.js 20 nebo novější (doporučeno aktuální LTS).
+The repository includes a [netlify.toml](./netlify.toml) configuration file. Netlify builds the project and serves the generated static files. **Playing the deployed game does not require `npm run dev`, a local terminal, or a running Node.js server.**
+
+### Connect the Git repository
+
+1. Push this repository, including `netlify.toml`, to your Git provider.
+2. In Netlify, import the existing repository and select the branch you want to deploy.
+3. Deploy the project using the settings below. They are already defined in `netlify.toml`.
+
+| Setting               | Value                 |
+| --------------------- | --------------------- |
+| Base directory        | Repository root (`.`) |
+| Build command         | `npm run build`       |
+| Publish directory     | `dist`                |
+| Build Node.js version | `22`                  |
+
+After a successful deployment, open the URL provided by Netlify. Subsequent pushes to the connected deployment branch trigger a new build and deployment.
+
+The build copies the application, word data, SVG assets, and local font into `dist/`. This directory is generated during deployment and is intentionally excluded from Git. The game switches screens within the same page, so it does not need a catch-all SPA redirect.
+
+### Manual deployment
+
+You can also build locally and upload the output folder to Netlify:
+
+```sh
+npm run build
+```
+
+Upload **`dist/`**, which contains `index.html` at its root. The deployed files run directly on static hosting.
+
+For the configuration format, see the [Netlify file-based configuration documentation](https://docs.netlify.com/build/configure-builds/file-based-configuration/).
+
+## Running locally
+
+Use Node.js 20 or newer. The Netlify build uses Node.js 22 as configured above.
 
 ```sh
 npm install
 npm run dev
 ```
 
-Otevři **http://127.0.0.1:5173**. Samotná aplikace i vývojový server fungují bez instalace balíčků; dev dependencies slouží pouze pro automatické testy. Použij HTTP server, protože aplikace načítá ES moduly a lokální JSON přes `fetch`.
+Open **http://127.0.0.1:5173**. The application and local server can run without installing packages; development dependencies are only needed for the automated browser tests.
+
+To preview the production output locally:
 
 ```sh
-npm run build    # vytvoří statický web v dist/
-npm run preview  # spustí dist/ na stejném portu
+npm run build
+npm run preview
 ```
 
-Obsah `dist/` lze nasadit na GitHub Pages, Netlify nebo jiný statický hosting. Cesty k assetům jsou relativní, takže funguje i nasazení do podadresáře. Projekt zatím nebyl publikován.
+The preview uses the same local address. Use an HTTP server for local testing: opening `index.html` directly through `file://` does not support the game's ES modules and JSON loading. Netlify provides the HTTP hosting for the deployed version.
 
-## Funkce a ovládání
+The contents of `dist/` can also be deployed to other static hosts. Asset paths are relative, allowing deployment to a subdirectory.
 
-- Hlavní menu, pravidla a šest kategorií se 180 názvy z dodaného `data.json`.
-- Náhodný výběr bez opakování během návštěvy, i po přepnutí kategorie nebo návratu do menu.
-- Správný tip odhalí všechny výskyty písmene. Osm různých chybných tipů znamená prohru.
-- Výhra a prohra nabídnou další kolo, změnu kategorie nebo návrat do menu.
-- Vyčerpaná kategorie se deaktivuje; slovník se obnoví až při nové návštěvě/obnovení stránky.
-- Myš, dotyk, Tab / Shift+Tab, Enter / mezerník a přímé psaní A–Z. Esc pozastaví hru a z pauzy pokračuje.
-- V pauze se tipy nepřijímají. Opakované tipy, držené klávesy a kombinace s Ctrl / Cmd / Alt se nezapočítávají.
-- Chybu načtení slov lze napravit tlačítkem Try again.
+## Features and controls
 
-Rozhraní je v angličtině podle designu i dodaného slovníku.
+- Main menu, instructions, and six categories containing 180 names from the supplied `data.json`.
+- Random word selection without repeats during a visit, including after changing categories or returning to the menu.
+- Correct guesses reveal every occurrence of a letter. Eight distinct incorrect guesses end the round.
+- Win and loss dialogs offer another round, a different category, or a return to the menu.
+- Exhausted categories become unavailable. Reloading the page starts a new visit and resets the word pool.
+- Mouse, touch, Tab / Shift+Tab, Enter / Space, and direct A-Z keyboard input. Escape pauses the game and resumes a paused round.
+- Guesses are blocked while paused. Duplicate guesses, held keys, and Ctrl / Cmd / Alt shortcuts do not count as new guesses.
+- A recoverable word-loading error with a Try again button.
 
-## Architektura
+The interface is in English, matching the design and supplied word list.
+
+## Architecture
 
 ```text
+netlify.toml       Netlify build and static publishing configuration
 starter-code/
-  index.html       sémantické obrazovky a nativní dialog
-  styles.css       mobile-first styly, breakpointy 600 a 1100 px
-  data.json        původní slovník, beze změn
-  js/game.js       čisté přechody stavu, výběr slov, popis hádanky
-  js/app.js        DOM, načtení dat, focus a ovládání
-  assets/          původní SVG a lokální font Mouse Memoirs
+  index.html       semantic screens and native dialog
+  styles.css       mobile-first styles, 600 px and 1100 px breakpoints
+  data.json        original, unchanged word list
+  js/game.js       pure state transitions, word selection, puzzle descriptions
+  js/app.js        DOM updates, data loading, focus management, input handling
+  assets/          original SVGs and local Mouse Memoirs font
 scripts/
-  serve.mjs        lokální HTTP server
-  build.mjs        vytvoření statického distribučního adresáře
+  serve.mjs        local HTTP server
+  build.mjs        static production output generation
 tests/
-  unit/            testy herních pravidel pomocí node:test
-  e2e/             Playwright scénáře a axe-core audit
+  unit/            game-rule tests using node:test
+  e2e/             Playwright scenarios and axe-core accessibility checks
 ```
 
-`guessLetter` nemění vstupní stav. Výběr slov drží historii v paměti a nemění dodané JSON objekty. Stav se neukládá na server ani do localStorage. Záměrně se nepoužívá framework, router ani globální store: čtyři obrazovky a jedna hra je nepotřebují.
+`guessLetter` does not mutate its input state. Word selection tracks played names in memory without changing the supplied JSON objects. State is not stored on a server or in localStorage. Four screens and a single game are handled with native JavaScript modules rather than a framework, router, or global state library.
 
-Celá slova se zalamují jako skupiny. Container query jednotky omezují šířku políček u dlouhého jednotlivého slova. Mobil, tablet a desktop využívají příslušné dodané pozadí. Font je hostovaný lokálně a přednačtený.
+Words wrap as complete groups. Container query units limit tile widths for unusually long individual words. Mobile, tablet, and desktop layouts use their corresponding supplied backgrounds. The font is hosted locally and preloaded.
 
-## Přístupnost
+## Accessibility
 
-- Skrytá obrazovka není v pořadí focusu; po navigaci se focus přesouvá na nadpis, po návratu na Play.
-- Nativní `dialog.showModal()` znepřístupní pozadí. Tab oběma směry zůstává uvnitř dialogu a po pokračování se focus vrací na Pause.
-- `aria-disabled` zachová focus na právě použitém písmenu. Obsluha událostí opakovaný tip ignoruje.
-- Životy jsou dostupné jako pojmenovaný `meter`. Trvalý živý region oznamuje tipy, zbývající životy a průběžný stav slov bez prozrazení odpovědi.
-- Dekorativní obrázky a vizuální políčka jsou skryté před čtečkou. Hádanka má samostatný textový popis.
-- Viditelný focus, skip link, kontrastní ovládání a respektování `prefers-reduced-motion`.
+- Hidden screens are excluded from the focus order. Navigation moves focus to the new heading; returning to the menu focuses Play.
+- Native `dialog.showModal()` makes the background inert. Tab navigation stays inside the dialog in both directions, and resuming returns focus to Pause.
+- `aria-disabled` preserves focus on the letter just used. Event handlers ignore repeated guesses.
+- Health is exposed as a labelled `meter`. A persistent live region announces guesses, remaining lives, and puzzle progress without revealing unguessed letters.
+- Decorative images and visual letter tiles are hidden from screen readers. The puzzle has a separate text description.
+- Visible focus indicators, a skip link, contrasting controls, and support for `prefers-reduced-motion`.
 
-Automatický audit nepokrývá všechny problémy přístupnosti. Ruční test s NVDA / VoiceOver je vhodný před odevzdáním.
+Automated checks do not cover every accessibility issue. Manual testing with NVDA or VoiceOver is recommended before submitting the solution.
 
-## Testy
+## Testing
 
 ```sh
 npm test
@@ -74,15 +112,11 @@ npm run test:e2e
 npm run test:all
 ```
 
-E2E testy ve výchozím nastavení použijí nainstalovaný Google Chrome v headless režimu. Jiný kanál nastavíš pomocí `PLAYWRIGHT_CHANNEL`, například `msedge` nebo `chromium` (ten vyžaduje `npx playwright install chromium`).
+Browser tests use an installed Google Chrome in headless mode by default. Set `PLAYWRIGHT_CHANNEL` to use another channel, such as `msedge` or `chromium`. The Chromium channel requires `npx playwright install chromium`.
 
-Testy běží v rozměrech **375 × 812**, **768 × 1024** a **1440 × 1024**; doplňkově kontrolují osm šířek od 320 do 1100 px. Pokrývají průchod klávesnicí, shodná písmena, opakované tipy, osm chyb, výhru, pauzu, focus, replay bez opakování, vyčerpání kategorie, obnovu po chybě JSONu, skutečný slovník, dlouhé názvy a omezené animace. Axe-core kontroluje všechny obrazovky a dialog proti pravidlům WCAG 2.2 AA. Screenshoty a případné diagnostické záznamy jsou v ignorovaném `coverage/`.
+Tests run at **375 x 812**, **768 x 1024**, and **1440 x 1024**, with additional layout checks at eight widths between 320 and 1100 px. They cover keyboard navigation, repeated letters, duplicate guesses, eight incorrect guesses, winning, pausing, focus management, replay without repeated words, category exhaustion, recovery after data-loading failures, the real word list, long names, and reduced motion. Axe-core checks every screen and the dialog against its WCAG 2.2 AA rules. Screenshots and failure diagnostics are written to the ignored `coverage/` directory.
 
-## Design a zdroje
-
-Vzhled vychází z dodaných screenshotů a původních Frontend Mentor assetů. Odkazovaná Figma nebyla v tomto prostředí přístupná, přesnou shodu s jejími ostatními obrazovkami proto nelze potvrdit. Figma soubory se do repozitáře nepřidávají; původní `.gitignore` zůstávají zachované.
-
-- [HTML dialog – MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog)
+- [HTML dialog - MDN](https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/dialog)
 - [Playwright configuration](https://playwright.dev/docs/test-configuration)
 - [axe-core](https://github.com/dequelabs/axe-core)
-- Font Mouse Memoirs pod [SIL Open Font License](./starter-code/assets/fonts/OFL.txt).
+- Mouse Memoirs font under the [SIL Open Font License](./starter-code/assets/fonts/OFL.txt).
