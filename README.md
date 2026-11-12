@@ -1,5 +1,7 @@
 # The Hangman Game
 
+**Live site:** [Play The Hangman Game](https://pettik-hangman-game.netlify.app/)
+
 A responsive implementation of the [Frontend Mentor Hangman challenge](https://www.frontendmentor.io), built with HTML, CSS, and modular JavaScript. The project follows a mobile-first approach and has no framework or production dependencies. The original brief is preserved in [docs/CHALLENGE.md](./docs/CHALLENGE.md).
 
 ## Deploying to Netlify
